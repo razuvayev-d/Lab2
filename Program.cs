@@ -1,19 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.IO;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
-
+using System.Xml.Serialization;
 
 namespace Lab2
 {
+    [Serializable]
     static class Program
     {
         public static void Main(string[] args)
         {             
-            string path = "Input.txt";
+            string path = "Input.txt";         
 
             Client[] clients = null;
             List<string> ErrorLog = null;
@@ -42,7 +40,47 @@ namespace Lab2
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
+            }           
+            if (File.Exists("data.xml")) File.Delete("data.xml");
+            foreach (Client c in clients)
+            {
+                if (c == null) break;
+                if (Convert.ToString(c.GetType()) == "Lab2.Contributor")
+                {
+                    XmlSerializer serializer = new XmlSerializer(typeof(Contributor));
+                    using (FileStream fs = new FileStream("data.xml", FileMode.Append))
+                    {
+                        serializer.Serialize(fs, c);
+                    }
+                }
+                else if (Convert.ToString(c.GetType()) == "Lab2.Debtor")
+                {
+                    XmlSerializer serializer = new XmlSerializer(typeof(Debtor));
+                    using (FileStream fs = new FileStream("data.xml", FileMode.Append))
+                    {
+                        serializer.Serialize(fs, c);
+                    }
+                }
+                else if (Convert.ToString(c.GetType()) == "Lab2.Organization")
+                {
+                    XmlSerializer serializer = new XmlSerializer(typeof(Organization));
+                    using (FileStream fs = new FileStream("data.xml", FileMode.Append))
+                    {
+                        serializer.Serialize(fs, c);
+                    }
+                }
+
             }
+
+
+
+
+
+
+
+
+
+
             if (ErrorLog.Count == 0) Console.WriteLine("База данных успешно создана");
             else
             {
@@ -54,8 +92,7 @@ namespace Lab2
                     int i = 0;
                     while (i < ErrorLog.Count) Console.WriteLine(ErrorLog[i++]);
                 }
-            }
-                      
+            }          
             while (true)
             {                
                 Console.WriteLine("Выберете необходимое действие: \n" +
@@ -72,6 +109,7 @@ namespace Lab2
                     {
                         clients[i++].GetDataBase();
                     }
+                    
                 }
                 else if (command == 2)
                 {
@@ -156,13 +194,12 @@ namespace Lab2
                     {
                         ErrorLog.Add(strClient);
                     }
-                    
                 }
                 catch
                 {
                     ErrorLog.Add(strClient);              
                 }
-
+                if (i > n) ErrorLog.Add("Последние записи были отклонены, так как выходят за пределы заявленного количества записей");
             }
             ifile.Close();
         }
@@ -176,7 +213,7 @@ namespace Lab2
         {
             if (date == null) throw new ArgumentNullException("Строковое представление даты не может быть null");
             try
-            {
+            {             
                 int year = Convert.ToInt32(Regex.Replace(date, "[0-9]{2}[./-][0-9]{2}[./-]", ""));
                 int month = Convert.ToInt32(Regex.Replace(Regex.Replace(date, "^[0-9]{2}[./-]", ""), "[./-][0-9]{4}", ""));
                 int day = Convert.ToInt32(Regex.Replace(date, "[./-][0-9]{2}[./-][0-9]{4}", ""));

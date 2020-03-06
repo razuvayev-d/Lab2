@@ -1,17 +1,20 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Text.RegularExpressions;
+using System.Diagnostics;
 
 namespace Lab2
 {
     /// <summary>
     /// Абстрактный класс для клиента банка
     /// </summary>
-    abstract class Client
-    {       
+    public abstract class Client
+    {      
+        /// <summary>
+        /// Конструктор по-умолчанию
+        /// </summary>
+        public Client()
+        {
+        }
+
         /// <summary>
         /// Идентификатор клиента
         /// </summary>
@@ -24,14 +27,19 @@ namespace Lab2
         /// Размер вклада/кредита
         /// </summary>
          protected float account_size;
-               
+        /// <summary>
+        /// Конструктор базового класса Client
+        /// </summary>
+        /// <param name="name">Идентификатор клиента</param>
+        /// <param name="date">Дата открытия счета</param>
+        /// <param name="account_size">Размер вклада/кредита</param>        
         public Client(string name, DateTime date, float account_size)
         {
             this.name = name;
             this.date = date;
-            this.account_size = account_size;         
+            this.account_size = account_size;
+            Trace.WriteLine("Конструктор абстрактного класса Client завершил работу");
         }
-
 
         /// <summary>
         /// Выводит информацию о клиенте с определенным идентификатором
